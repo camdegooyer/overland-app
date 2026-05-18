@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 
 const SECTIONS = [
   {
@@ -25,7 +25,7 @@ const SECTIONS = [
 ];
 
 export default async function TeamHome() {
-  const { displayName } = await requireRole("team");
+  const { displayName } = await requireAdmin();
 
   return (
     <div className="max-w-[1280px] mx-auto px-6 py-16">

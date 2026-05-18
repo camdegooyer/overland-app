@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { createClient } from "@/lib/supabase/server";
 
 const Hex = z
@@ -31,7 +31,7 @@ export type UpsertProjectRosterMetaInput = z.infer<typeof Input>;
 export async function upsertProjectRosterMeta(
   raw: UpsertProjectRosterMetaInput,
 ) {
-  await requireRole("team");
+  await requireAdmin();
   const input = Input.parse(raw);
 
   const supabase = await createClient();

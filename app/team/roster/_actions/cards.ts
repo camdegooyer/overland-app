@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { createClient } from "@/lib/supabase/server";
 import { logAudit, logAuditBatch } from "@/lib/roster/audit";
 import {
@@ -38,7 +38,7 @@ const CreateInput = z.object({
 });
 
 export async function createEmployeeDayCard(raw: z.infer<typeof CreateInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = CreateInput.parse(raw);
 
   const supabase = await createClient();
@@ -86,7 +86,7 @@ const BulkCreateInput = z.object({
 export async function bulkCreateEmployeeDayCards(
   raw: z.infer<typeof BulkCreateInput>,
 ) {
-  await requireRole("team");
+  await requireAdmin();
   const input = BulkCreateInput.parse(raw);
 
   const supabase = await createClient();
@@ -147,7 +147,7 @@ const MoveInput = z.object({
 });
 
 export async function moveEmployeeDayCard(raw: z.infer<typeof MoveInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = MoveInput.parse(raw);
 
   const supabase = await createClient();
@@ -196,7 +196,7 @@ export async function moveEmployeeDayCard(raw: z.infer<typeof MoveInput>) {
 const DeleteInput = z.object({ card_id: z.string().uuid() });
 
 export async function deleteEmployeeDayCard(raw: z.infer<typeof DeleteInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = DeleteInput.parse(raw);
 
   const supabase = await createClient();
@@ -240,7 +240,7 @@ const UpdateInput = z.object({
 });
 
 export async function updateEmployeeDayCard(raw: z.infer<typeof UpdateInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = UpdateInput.parse(raw);
 
   const supabase = await createClient();

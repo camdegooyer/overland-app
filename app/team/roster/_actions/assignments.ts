@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { createClient } from "@/lib/supabase/server";
 import { logAudit } from "@/lib/roster/audit";
 
@@ -29,7 +29,7 @@ const CreateInput = z
   );
 
 export async function createRosterAssignment(raw: z.infer<typeof CreateInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = CreateInput.parse(raw);
 
   const supabase = await createClient();
@@ -117,7 +117,7 @@ const MoveInput = z.object({
 });
 
 export async function moveRosterAssignment(raw: z.infer<typeof MoveInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = MoveInput.parse(raw);
 
   const supabase = await createClient();
@@ -160,7 +160,7 @@ export async function moveRosterAssignment(raw: z.infer<typeof MoveInput>) {
 const DeleteInput = z.object({ assignment_id: z.string().uuid() });
 
 export async function deleteRosterAssignment(raw: z.infer<typeof DeleteInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = DeleteInput.parse(raw);
 
   const supabase = await createClient();
@@ -203,7 +203,7 @@ const UpdateInput = z.object({
 });
 
 export async function updateRosterAssignment(raw: z.infer<typeof UpdateInput>) {
-  await requireRole("team");
+  await requireAdmin();
   const input = UpdateInput.parse(raw);
 
   const supabase = await createClient();

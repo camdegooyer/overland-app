@@ -1,7 +1,7 @@
 import { Logo } from "./Logo";
 
 type Props = {
-  area: "Team" | "Client portal";
+  area: "Team" | "Client portal" | "Your roster";
   displayName: string | null;
   email: string;
 };

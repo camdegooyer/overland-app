@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -24,7 +24,7 @@ const Input = z.object({
 export type UpdateEmployeeInput = z.infer<typeof Input>;
 
 export async function updateEmployee(raw: UpdateEmployeeInput) {
-  await requireRole("team");
+  await requireAdmin();
   const input = Input.parse(raw);
 
   const patch: Record<string, unknown> = {};

@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import {
   getRosterEmployees,
   getRosterOtherItems,
@@ -16,7 +16,7 @@ export default async function RosterNotes({
 }: {
   searchParams: SearchParams;
 }) {
-  await requireRole("team");
+  await requireAdmin();
   const { week } = await searchParams;
   const anchor = week ?? todayISO();
 

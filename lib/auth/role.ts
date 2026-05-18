@@ -1,10 +1,14 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type Role = "team" | "client" | "none";
+export type TeamSubrole = "admin" | "staff";
 
 export type RoleResolution = {
   role: Role;
+  /** Only set when role = 'team'. Determines /team vs /me workspace. */
+  subrole: TeamSubrole | null;
   contactId: string | null;
+  employeeId: string | null;
   displayName: string | null;
 };
 
@@ -12,12 +16,11 @@ export type RoleResolution = {
  * Map a logged-in user's email to a role in the Overland data model.
  *
  *   contacts.email → contact row
- *     ↳ employees.contact_id present → 'team'
+ *     ↳ employees.contact_id present → 'team' (+ subrole from employees.team_role)
  *     ↳ project_owners.contact_id present → 'client'
  *     ↳ neither → 'none'
  *
- * Team beats client if both match (an employee who also owns a project lands
- * on the team dashboard).
+ * Team beats client if both match.
  */
 export async function resolveRole(email: string): Promise<RoleResolution> {
   const admin = createAdminClient();
@@ -38,7 +41,13 @@ export async function resolveRole(email: string): Promise<RoleResolution> {
 
   const contact = data as ContactRow | null;
   if (!contact) {
-    return { role: "none", contactId: null, displayName: null };
+    return {
+      role: "none",
+      subrole: null,
+      contactId: null,
+      employeeId: null,
+      displayName: null,
+    };
   }
 
   const displayName =
@@ -46,22 +55,45 @@ export async function resolveRole(email: string): Promise<RoleResolution> {
     [contact.first_name, contact.last_name].filter(Boolean).join(" ") ||
     null;
 
-  const [{ count: employeeCount }, { count: ownerCount }] = await Promise.all([
+  const [employeeRes, ownerRes] = await Promise.all([
     admin
       .from("employees")
-      .select("contact_id", { count: "exact", head: true })
-      .eq("contact_id", contact.id),
+      .select("id, team_role")
+      .eq("contact_id", contact.id)
+      .maybeSingle(),
     admin
       .from("project_owners")
       .select("contact_id", { count: "exact", head: true })
       .eq("contact_id", contact.id),
   ]);
 
-  if ((employeeCount ?? 0) > 0) {
-    return { role: "team", contactId: contact.id, displayName };
+  const employee = employeeRes.data as
+    | { id: string; team_role: TeamSubrole }
+    | null;
+
+  if (employee) {
+    return {
+      role: "team",
+      subrole: employee.team_role ?? "staff",
+      contactId: contact.id,
+      employeeId: employee.id,
+      displayName,
+    };
   }
-  if ((ownerCount ?? 0) > 0) {
-    return { role: "client", contactId: contact.id, displayName };
+  if ((ownerRes.count ?? 0) > 0) {
+    return {
+      role: "client",
+      subrole: null,
+      contactId: contact.id,
+      employeeId: null,
+      displayName,
+    };
   }
-  return { role: "none", contactId: contact.id, displayName };
+  return {
+    role: "none",
+    subrole: null,
+    contactId: contact.id,
+    employeeId: null,
+    displayName,
+  };
 }

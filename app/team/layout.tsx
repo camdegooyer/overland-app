@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { TeamHeader } from "./_components/TeamHeader";
 import { TeamSidebar } from "./_components/TeamSidebar";
 
@@ -7,7 +7,7 @@ export default async function TeamLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, displayName } = await requireRole("team");
+  const { user, displayName } = await requireAdmin();
 
   return (
     <div className="flex flex-col min-h-screen">

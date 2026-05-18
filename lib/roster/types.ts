@@ -16,6 +16,7 @@ export type RosterEmployee = {
   notify_enabled: boolean;
   is_active: boolean;
   email: string | null;
+  team_role: "admin" | "staff";
 };
 
 export type RosterProject = {

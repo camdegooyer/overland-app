@@ -13,9 +13,12 @@ export default async function DashboardRouter() {
     redirect("/login");
   }
 
-  const { role, displayName } = await resolveRole(user.email);
+  const { role, subrole, displayName } = await resolveRole(user.email);
 
-  if (role === "team") redirect("/team");
+  if (role === "team") {
+    if (subrole === "admin") redirect("/team");
+    redirect("/me");
+  }
   if (role === "client") redirect("/portal");
 
   return (

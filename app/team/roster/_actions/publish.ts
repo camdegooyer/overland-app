@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { createClient } from "@/lib/supabase/server";
 import { logAuditBatch } from "@/lib/roster/audit";
 import { todayISO, addDaysISO } from "@/lib/roster/dates";
@@ -59,7 +59,7 @@ async function publishInner(
   raw: z.infer<typeof RangeInput>,
   includeAlreadyPublished: boolean,
 ) {
-  await requireRole("team");
+  await requireAdmin();
   const input = RangeInput.parse(raw);
 
   const supabase = await createClient();

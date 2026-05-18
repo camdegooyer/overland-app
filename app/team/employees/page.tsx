@@ -1,9 +1,9 @@
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { getRosterEmployees } from "@/lib/roster/queries";
 import { EmployeesTable } from "./_components/EmployeesTable";
 
 export default async function EmployeesAdmin() {
-  await requireRole("team");
+  await requireAdmin();
   const allEmployees = await getRosterEmployees();
   const employees = allEmployees.filter((e) => e.is_active);
 

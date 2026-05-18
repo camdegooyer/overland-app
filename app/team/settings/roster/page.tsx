@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import {
   getRosterDayDefaults,
   getRosterSettings,
@@ -6,7 +6,7 @@ import {
 import { SettingsForm } from "./_components/SettingsForm";
 
 export default async function RosterSettings() {
-  await requireRole("team");
+  await requireAdmin();
   const [settings, dayDefaults] = await Promise.all([
     getRosterSettings(),
     getRosterDayDefaults(),

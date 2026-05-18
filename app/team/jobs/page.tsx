@@ -1,9 +1,9 @@
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { getRosterProjects } from "@/lib/roster/queries";
 import { JobsTable } from "./_components/JobsTable";
 
 export default async function JobsAdmin() {
-  await requireRole("team");
+  await requireAdmin();
   const projects = await getRosterProjects();
 
   const visibleCount = projects.filter((p) => p.show_in_side_panel).length;

@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth/guard";
+import { requireAdmin } from "@/lib/auth/guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const Time = z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, "HH:MM or HH:MM:SS");
@@ -40,7 +40,7 @@ function normaliseTime(t: string): string {
 }
 
 export async function updateRosterSettings(raw: RosterSettingsInput) {
-  await requireRole("team");
+  await requireAdmin();
   const input = Input.parse(raw);
 
   // Client-side-style validation: collect every bad day up front so the user
